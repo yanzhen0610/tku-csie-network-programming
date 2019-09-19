@@ -11,8 +11,8 @@ const httpsPort = 3001;
 const resourceBaseDir = path.join(__dirname, 'public');
 
 const httpsOptions = {
-    key: fs.readFileSync('certs/localhost.key'),
-    cert: fs.readFileSync('certs/localhost.crt'),
+    key: fs.readFileSync(path.normalize('certs/localhost.key')),
+    cert: fs.readFileSync(path.normalize('certs/localhost.crt')),
 };
 
 const getResourcePath = (filePath) => path.join(resourceBaseDir, filePath);
@@ -81,7 +81,23 @@ const fileRequestHandler = (request, response) => {
     });
 };
 
+const logRequest = (request, response, duration) => {
+    const timeString = (new Date()).toISOString();
+    const statusCode = response.statusCode;
+    const remoteAddress = request.socket.remoteAddress;
+    const remotePort = request.socket.remotePort;
+    const requestUrl = request.url;
+    const userAgent = request.headers['user-agent'];
+    const durationMs = duration / 1000;
+    console.log(`[${timeString}] ${remoteAddress}:${remotePort} [${statusCode}] ${durationMs}ms: ${requestUrl} ${userAgent}`);
+};
+
 const requestHandler = (request, response) => {
+    const start = Date.now();
+    response.on('close', () => {
+        logRequest(request, response, Date.now() - start);
+    });
+
     const requestUrl = request.url;
 
     if (requestUrl in routes) {
@@ -110,20 +126,8 @@ const httpRequestHandler = (request, response) => {
     requestHandler(request, response);
 };
 
-const logRequest = (request, response) => {
-    const timeString = (new Date()).toISOString();
-    const remoteAddress = request.socket.remoteAddress;
-    const remotePort = request.socket.remotePort;
-    const requestUrl = request.url;
-    const userAgent = request.headers['user-agent'];
-    console.log(`[${timeString}] ${remoteAddress}:${remotePort}: ${requestUrl} ${userAgent}`);
-};
-
 const httpServer = http.createServer(httpRequestHandler);
 const httpsServer = https.createServer(httpsOptions, requestHandler);
-
-httpServer.on('request', logRequest);
-httpsServer.on('request', logRequest);
 
 httpServer.listen(httpPort, hostname, () => {
     console.log(`Resource Directory: ${resourceBaseDir}`);
