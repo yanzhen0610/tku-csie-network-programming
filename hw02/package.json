@@ -1,0 +1,19 @@
+{
+  "name": "hw02",
+  "version": "1.0.0",
+  "description": "## install packages",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yanzhen0610/tku-csie-network-programming.git"
+  },
+  "author": "Yz",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yanzhen0610/tku-csie-network-programming/issues"
+  },
+  "homepage": "https://github.com/yanzhen0610/tku-csie-network-programming#readme"
+}
