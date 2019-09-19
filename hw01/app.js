@@ -81,9 +81,9 @@ const logRequest = (request, response) => {
     const timeString = (new Date()).toISOString();
     const remoteAddress = request.socket.remoteAddress;
     const remotePort = request.socket.remotePort;
-    const statusCode = response.statusCode;
     const requestUrl = request.url;
-    console.log(`[${timeString}] ${remoteAddress}:${remotePort} [${statusCode}]: ${requestUrl}`);
+    const userAgent = request.headers['user-agent'];
+    console.log(`[${timeString}] ${remoteAddress}:${remotePort}: ${requestUrl} ${userAgent}`);
 };
 
 const httpServer = http.createServer(httpRequestHandler);
