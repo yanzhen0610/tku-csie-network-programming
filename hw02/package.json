@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/yanzhen0610/tku-csie-network-programming/issues"
   },
-  "homepage": "https://github.com/yanzhen0610/tku-csie-network-programming#readme"
+  "homepage": "https://github.com/yanzhen0610/tku-csie-network-programming#readme",
+  "dependencies": {
+    "etag": "^1.8.1",
+    "mime-types": "^2.1.24"
+  }
 }
