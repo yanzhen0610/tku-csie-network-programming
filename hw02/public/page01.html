@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+  <title>Web Page with SSE Example</title>
+  <!-- copyright by Isaac Tsai 2019/09/13 -->
+  </style>
+  <script>
+  	const evtSource = new EventSource('/sse');
+  	evtSource.onmessage = function(event) {
+      console.log('D='+event.data);
+    }
+  </script>
+</head>
+<body>
+<h1>這個網頁額外接受「伺服器端事件」送來的訊息</h1>
+<p>「伺服器端事件」(server side event, SSE)</p>
+<p>要打開網頁主控台才能看見送來訊息內容</p>
+</body>
+</html>
