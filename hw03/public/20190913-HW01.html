@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Draw and Anim in SVG Example</title>
+  <!-- copyright by Isaac Tsai 2019 -->
+  <style>
+  	#svgid {
+  border: 2px solid #ddd;
+}
+  </style>
+</head>
+<body>
+<H3>這是網路程式的第一個範例網頁</H3>
+<UL>
+<LI> 網頁中有中文文字</LI>
+<LI> 網頁中也有圖片</LI>
+<LI> 伺服器必須能處理HTTP與HTTPS的要求</LI>
+<LI> 這是靜態的圖<IMG src="./kiwi.png" width="300" height="200" /></LI>
+</UL>
+<H4>這裡是點擊後會移動的圖</H4>
+<div id="top"></div>
+<script type="text/javascript">
+const svgW = 1000; 
+const svgH = 220;
+const svgNS = "http://www.w3.org/2000/svg";
+const svg   = document.createElementNS(svgNS, "svg");
+      svg.setAttribute ("id", "svgid" );
+      svg.setAttribute ("width", svgW );  svg.setAttribute ("height",svgH );
+  var   g1_elem = document.createElementNS(svgNS, "g");
+        g1_elem.setAttributeNS(null,"id","Group01");
+  var   topDiv = document.getElementById('top');
+  var imgElem =  document.createElementNS(svgNS, "image");
+      imgElem.setAttributeNS(null,"href","./kiwi.png");
+      imgElem.setAttributeNS(null,"id","kiwi-pict");
+      imgElem.setAttributeNS(null,"x","5");
+      imgElem.setAttributeNS(null,"y","10");
+      imgElem.setAttributeNS(null,"width","300");
+      imgElem.setAttributeNS(null,"height","200");
+  var animElem = document.createElementNS(svgNS, "animate");
+    animElem.setAttributeNS('http://www.w3.org/1999/xlink',"xlink:href","#kiwi-pict");
+    animElem.setAttributeNS(null,"attributeName","x");
+    animElem.setAttributeNS(null,"from","5");
+    animElem.setAttributeNS(null,"to","700"); 
+    animElem.setAttributeNS(null,"dur","5s");
+    animElem.setAttributeNS(null,"begin","click");
+    animElem.setAttributeNS(null,"repeatCount","4");
+    animElem.setAttributeNS(null,"animation-direction","alternate");
+    animElem.setAttributeNS(null,"fill","freeze"); 
+    animElem.setAttributeNS(null,"d","kiwi-anim");
+  g1_elem.appendChild(imgElem);
+  g1_elem.appendChild(animElem);
+  svg.appendChild(g1_elem);
+  topDiv.appendChild(svg);
+</script>
+</body>
+</html>

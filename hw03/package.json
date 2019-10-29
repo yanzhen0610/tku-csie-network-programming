@@ -1,0 +1,23 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "Homework 03",
+  "main": "app.js",
+  "dependencies": {
+    "formidable": "^1.2.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Yz",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/yanzhen0610/tku-csie-network-programming.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yanzhen0610/tku-csie-network-programming/issues"
+  },
+  "homepage": "https://github.com/yanzhen0610/tku-csie-network-programming#readme"
+}
