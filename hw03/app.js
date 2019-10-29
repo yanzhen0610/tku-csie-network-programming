@@ -83,6 +83,7 @@ const fileRequestHandler = (request, response) => {
         fs.readFile(resourcePath, (error, data) => {
             if (error) {
                 reject(error);
+                return;
             }
             resolve(data);
         });
@@ -97,6 +98,7 @@ const fileRequestHandler = (request, response) => {
             fs.readFile(storagePath, (error, data) => {
                 if (error) {
                     reject(error);
+                    return;
                 }
                 resolve(data);
             })
