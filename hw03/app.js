@@ -7,8 +7,8 @@ const formidable = require('formidable');
 const hostname = '0.0.0.0';
 const httpPort = 8080;
 const httpsPort = 8081;
-const resourceBaseDir = path.join(__dirname, 'public');
-const storageBaseDir = path.join(__dirname, 'storage');
+const resourceBaseDir = path.resolve('public');
+const storageBaseDir = path.resolve('storage');
 const maxFields = 1024;
 const maxFieldsSize = 20 * 1024 * 1024;
 const maxFileSize = 200 * 1024 * 1024;
@@ -18,6 +18,7 @@ const httpsOptions = {
     cert: fs.readFileSync(path.normalize('certs/localhost.crt')),
 };
 
+// path.join('/', '../../..') => '/'
 const getResourcePath = (filePath) => path.join(resourceBaseDir, path.join('/', filePath));
 const getStoragePath = (filePath) => path.join(storageBaseDir, path.join('/', filePath));
 
