@@ -1,0 +1,132 @@
+<html lang="en-US" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <!-- Isaac Tsai @ iaiclab.tku at gmail dot com -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+      integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+      crossorigin=""
+    />
+    <script
+      type="text/javascript"
+      src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+      integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+      crossorigin=""
+    ></script>
+  </head>
+  <body style="margin: 0;">
+    <div>
+      <div id="map" style="height: 100%; width: 100%"></div>
+      <div style="position: absolute; right: 0; bottom: 0; z-index: 400;">
+        <div style="margin: 2rem; background: white;">
+          <div style="text-align: center; padding: 0.5rem;">
+            <label>IP:</label>
+            <input style="width: 9rem" id="ip_input" />
+            <button onclick="query()">Query</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      function query() {
+        var request = new XMLHttpRequest();
+        request.addEventListener("load", function() {
+          var data = JSON.parse(request.responseText);
+          L.marker([data.lat, data.lng])
+            .bindPopup(
+              "" +
+                data.country +
+                "<br />" +
+                data.city +
+                "<br />" +
+                data.ip +
+                "<br />" +
+                data.isp
+            )
+            .addTo(map);
+        });
+        request.open(
+          "GET",
+          "/ip_geolocation?ip=" + document.getElementById("ip_input").value,
+          true
+        );
+        request.send();
+      }
+    </script>
+    <script type="text/javascript">
+      // Place your markers code here!
+      markers = [
+        {
+          country: "Venezuela",
+          city: "Buenos Aires",
+          ip: "190.37.198.2",
+          isp: "CANTV Servicios, Venezuela",
+          lat: 10.0106,
+          lng: -65.5217
+        },
+        {
+          country: "Jamaica",
+          city: "Kingston",
+          ip: "72.27.189.3",
+          isp: "FLOW",
+          lat: 18.0023,
+          lng: -76.7921
+        },
+        {
+          country: "South Africa",
+          city: "Sandton (Edenburg)",
+          ip: "169.1.102.4",
+          isp: "Afrihost (Pty) Ltd",
+          lat: -26.0461,
+          lng: 28.0599
+        },
+        {
+          country: "Norway",
+          city: "Tromsø",
+          ip: "178.74.25.5",
+          isp: "Broadnet",
+          lat: 69.6548,
+          lng: 19.0101
+        }
+      ];
+    </script>
+    <script>
+      const osmTile = "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+      const cartoDBwh =
+        "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png";
+      const cartoDBdk =
+        "https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png";
+      const thunderforest =
+        "http://tile.thunderforest.com/cycle/${z}/${x}/${y}.png";
+      const stamenDB = "http://a.tile.stamen.com/toner/${z}/${x}/${y}.png";
+      const mapnikBW = "https://tiles.wmflabs.org/bw-mapnik/${z}/${x}/${y}.png";
+      var map = L.map("map", {
+        center: [20.0, 5.0],
+        minZoom: 2,
+        zoom: 2
+      });
+      L.tileLayer(osmTile, {
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        subdomains: ["a", "b", "c"]
+      }).addTo(map);
+      for (var i = 0; i < markers.length; ++i) {
+        L.marker([markers[i].lat, markers[i].lng])
+          .bindPopup(
+            "" +
+              markers[i].country +
+              "<br />" +
+              markers[i].city +
+              "<br />" +
+              markers[i].ip +
+              "<br />" +
+              markers[i].isp
+          )
+          .addTo(map);
+      }
+    </script>
+  </body>
+</html>
