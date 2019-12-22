@@ -316,7 +316,7 @@ routes.add('GET', '/user', (request, response) => {
     response.write(JSON.stringify({ username: request.session.user.username }))
 });
 
-routes.add('GET', '/sse', (request, response) => {
+routes.add('GET', '/sse', async (request, response) => {
     response.writeHead(200, {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
@@ -331,9 +331,14 @@ routes.add('GET', '/sse', (request, response) => {
         response.write(`data: ${(new Date()).toISOString()}\n\n`);
     }, 100);
 
+    let resume;
+    const blocker = new Promise(resolve => resume = resolve);
+
     request.on('close', () => {
         clearInterval(intervalId);
+        resume();
     });
+    await blocker;
 });
 
 routes.add('POST', '/upload', (request, response) => {
