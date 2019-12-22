@@ -364,20 +364,17 @@ routes.add('GET', '/ip_geolocation', async (request, response) => {
     const request_ip = url.parse(request.url, true).query.ip;
 
     if (!request_ip) {
-        response.statusCode = 400;
-        response.end();
-        return;
+        return response.statusCode = 400;
     }
 
-    httpRequest(`https://api.ipgeolocation.io/ipgeo?apiKey=${ipGeolocationApiKey}&ip=${request_ip}`, (error, api_response, body) => {
-        if (error || !api_response || api_response.statusCode !== 200) {
-            response.statusCode = 500;
-            response.end();
-            return;
-        }
-
-        const data = JSON.parse(body);
-
+    try {
+        const data = await new Promise((resolve, reject) => {
+            httpRequest(`https://api.ipgeolocation.io/ipgeo?apiKey=${ipGeolocationApiKey}&ip=${request_ip}`, (error, apiResponse, body) => {
+                const e = error || !apiResponse || apiResponse.statusCode !== 200;
+                if (e) return reject(e);
+                resolve(JSON.parse(body));
+            });
+        });
         response.statusCode = 200;
         response.end(JSON.stringify({
             country: data.country_name,
@@ -387,8 +384,9 @@ routes.add('GET', '/ip_geolocation', async (request, response) => {
             lat: data.latitude,
             lng: data.longitude,
         }));
-    });
-
+    } catch (error) {
+        response.statusCode = 500;
+    }
 });
 
 const locations = [];
