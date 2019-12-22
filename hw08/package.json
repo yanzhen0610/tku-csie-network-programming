@@ -1,0 +1,24 @@
+{
+  "name": "hw08",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^3.0.7",
+    "cookie": "^0.4.0",
+    "formidable": "^1.2.1",
+    "gif-encoder": "^0.7.2",
+    "mime-types": "^2.1.25",
+    "qrcode": "^1.4.4",
+    "request": "^2.88.0",
+    "sequelize": "^5.21.3",
+    "socket.io": "^2.3.0",
+    "sqlite3": "^4.1.1"
+  }
+}

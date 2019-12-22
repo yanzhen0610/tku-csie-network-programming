@@ -1,0 +1,172 @@
+<!-- <!DOCTYPE html> -->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+      integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+      crossorigin=""
+    />
+    <script
+      src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+      integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+      crossorigin=""
+    ></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"
+      integrity="sha256-S1J4GVHHDMiirir9qsXWc8ZWw74PHHafpsHp5PXtjTs="
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      var socket = io();
+    </script>
+  </head>
+
+  <body style="margin: 0;">
+    <div>
+      <div id="map" style="height: 100%; width: 100%"></div>
+      <div style="position: absolute; right: 0; bottom: 0; z-index: 400;">
+        <div style="margin: 2rem; background: white;">
+          <div style="text-align: center; padding: 0.5rem;">
+            <label>IP:</label>
+            <input style="width: 9rem" id="ip_input" />
+            <button onclick="query()">Query</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      var username = "";
+      var map = L.map("map", {
+        center: [20.0, 5.0],
+        minZoom: 2,
+        zoom: 2
+      });
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution:
+          '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+      }).addTo(map);
+
+      function mapAddUserPin(lat, lng, username) {
+        L.marker([lat, lng])
+          .bindPopup(
+            `Latitude: ${lat}
+            <br />
+            Longitude: ${lng}
+            <br />
+            User: ${username}`
+          )
+          .addTo(map);
+      }
+
+      map.on("click", function(event) {
+        mapAddUserPin(event.latlng.lat, event.latlng.lng, username);
+        socket.emit("user_added_pin", {
+          lat: event.latlng.lat,
+          lng: event.latlng.lng
+        });
+      });
+
+      socket.on("add_user_pin", pin =>
+        mapAddUserPin(pin.lat, pin.lng, pin.username)
+      );
+
+      axios
+        .get("/user")
+        .then(response => (username = response.data.username))
+        .catch(console.error);
+
+      axios
+        .get("/locations")
+        .then(response =>
+          response.data.forEach(location =>
+            mapAddUserPin(location.lat, location.lng, location.username)
+          )
+        )
+        .catch(console.error);
+
+      function query() {
+        var request = new XMLHttpRequest();
+        request.addEventListener("load", function() {
+          var data = JSON.parse(request.responseText);
+          L.marker([data.lat, data.lng])
+            .bindPopup(
+              "" +
+                data.country +
+                "<br />" +
+                data.city +
+                "<br />" +
+                data.ip +
+                "<br />" +
+                data.isp
+            )
+            .addTo(map);
+        });
+        request.open(
+          "GET",
+          "/ip_geolocation?ip=" + document.getElementById("ip_input").value,
+          true
+        );
+        request.send();
+      }
+
+      markers = [
+        {
+          country: "Venezuela",
+          city: "Buenos Aires",
+          ip: "190.37.198.2",
+          isp: "CANTV Servicios, Venezuela",
+          lat: 10.0106,
+          lng: -65.5217
+        },
+        {
+          country: "Jamaica",
+          city: "Kingston",
+          ip: "72.27.189.3",
+          isp: "FLOW",
+          lat: 18.0023,
+          lng: -76.7921
+        },
+        {
+          country: "South Africa",
+          city: "Sandton (Edenburg)",
+          ip: "169.1.102.4",
+          isp: "Afrihost (Pty) Ltd",
+          lat: -26.0461,
+          lng: 28.0599
+        },
+        {
+          country: "Norway",
+          city: "Tromsø",
+          ip: "178.74.25.5",
+          isp: "Broadnet",
+          lat: 69.6548,
+          lng: 19.0101
+        }
+      ];
+
+      for (var i = 0; i < markers.length; ++i) {
+        L.marker([markers[i].lat, markers[i].lng])
+          .bindPopup(
+            "" +
+              markers[i].country +
+              "<br />" +
+              markers[i].city +
+              "<br />" +
+              markers[i].ip +
+              "<br />" +
+              markers[i].isp
+          )
+          .addTo(map);
+      }
+    </script>
+  </body>
+</html>
