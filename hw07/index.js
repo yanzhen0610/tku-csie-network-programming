@@ -20,7 +20,7 @@ const maxFields = 1024;
 const maxFieldsSize = 20 * 1024 * 1024;
 const maxFileSize = 200 * 1024 * 1024;
 const dbPath = 'database';
-const sequelize = new Sequelize({ dialect: 'sqlite', storage: dbPath });
+const sequelize = new Sequelize({ dialect: 'sqlite', storage: dbPath, logging: false });
 const sessionIdCookieName = 'session-id';
 const sessionIdLength = 128;
 const sessionLifetime = 60 * 60 * 2; // 2 hours
@@ -230,15 +230,15 @@ const serve = async () => {
         createTables();
 
         httpServer.listen(httpPort, hostname, () => {
-            console.log(`Resource Directory: ${resourceBaseDir}`);
-            console.log(`Server running at http://${hostname}:${httpPort}/`);
+            console.info(`Resource Directory: ${resourceBaseDir}`);
+            console.info(`Server running at http://${hostname}:${httpPort}/`);
         });
         httpsServer.listen(httpsPort, hostname, () => {
-            console.log(`Resource Directory: ${resourceBaseDir}`);
-            console.log(`Server running at https://${hostname}:${httpsPort}/`);
+            console.info(`Resource Directory: ${resourceBaseDir}`);
+            console.info(`Server running at https://${hostname}:${httpsPort}/`);
         });
     } catch (error) {
-        console.log(error);
+        console.error(error);
     }
 };
 
@@ -297,8 +297,6 @@ routes.add('POST', '/register', async (request, response) => {
             resolve(fields);
         });
     });
-
-    console.log(username, password);
 
     if (!username || !password) {
         return redirectTo(response, '/register.html');
@@ -434,4 +432,4 @@ socketIoEventHandlers['user_added_pin'] = socket => message => {
 };
 
 // serve
-serve()
+serve();
