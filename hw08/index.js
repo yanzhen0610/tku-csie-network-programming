@@ -479,11 +479,13 @@ routes.add('GET', /.*/, async (request, response) => {
 
 // socket.io events
 socketIoEventHandlers['user_added_pin'] = socket => message => {
-    const { lat, lng } = message;
-    if (!isValidLatitude(lat) || !isValidLongitude(lng)) return;
-    const user = socket.session.user;
-    locations.push({ lat, lng, user });
-    socket.broadcast.emit('add_user_pin', { lat, lng, username: user.username });
+    try { // prevent from users sending unwanted messages
+        const { lat, lng } = message;
+        if (!isValidLatitude(lat) || !isValidLongitude(lng)) return;
+        const user = socket.session.user;
+        locations.push({ lat, lng, user });
+        socket.broadcast.emit('add_user_pin', { lat, lng, username: user.username });
+    } catch { }
 };
 
 // serve
