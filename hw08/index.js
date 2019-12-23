@@ -462,18 +462,15 @@ routes.add('GET', /.*/, async (request, response) => {
     const requestUrl = decodeURI(request.url);
 
     try {
-        const data = await fsAsync.readFile(getResourcePath(requestUrl));;
-        response.statusCode = 200;
-        response.end(data);
-    } catch (e) {
-        try {
-            const data = await fsAsync.readFile(getStoragePath(requestUrl));
-            response.statusCode = 200;
-            response.end(data);
-        } catch (e) {
-            response.statusCode = 404;
-            response.end();
-        }
+        const filePath = getResourcePath(requestUrl);
+        return response.end(await fsAsync.readFile(filePath));
+    } catch { }
+    try {
+        const filePath = getStoragePath(requestUrl);
+        response.end(await fsAsync.readFile(filePath));
+    } catch {
+        response.statusCode = 404;
+        response.end();
     }
 });
 
