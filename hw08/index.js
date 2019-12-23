@@ -42,6 +42,7 @@ form.maxFields = maxFields;
 form.maxFieldsSize = maxFieldsSize;
 form.maxFileSize = maxFileSize;
 
+// mkdir if not exists
 try {
     fs.mkdirSync(storageBaseDir);
 } catch (error) {
@@ -53,6 +54,24 @@ try {
     if (error.code !== 'EEXIST') throw error;
 }
 
+// tables
+const createTables = async () => {
+    await sequelize.getQueryInterface().createTable('users', {
+        id: {
+            type: DataTypes.INTEGER,
+            primaryKey: true,
+            autoIncrement: true,
+        },
+        username: {
+            type: DataTypes.STRING,
+            unique: true,
+        },
+        password: { type: DataTypes.STRING },
+        createdAt: { type: DataTypes.DATE },
+        updatedAt: { type: DataTypes.DATE },
+    });
+};
+
 // models
 class User extends Model { };
 User.init({
@@ -60,8 +79,8 @@ User.init({
     password: DataTypes.STRING,
 }, { sequelize, modelName: 'user' });
 
-// routes
-class Routes {
+// router
+class Router {
     constructor() {
         this.routes = {}
     }
@@ -82,30 +101,13 @@ class Routes {
                 if (route.path == path) {
                     return route.callback;
                 }
-            } else if (route.path.test(path)) {
+            } else if (route.path.test(path)/* regex */) {
                 return route.callback;
             }
         }
     }
 };
-const routes = new Routes();
-
-const createTables = async () => {
-    sequelize.getQueryInterface().createTable('users', {
-        id: {
-            type: DataTypes.INTEGER,
-            primaryKey: true,
-            autoIncrement: true,
-        },
-        username: {
-            type: DataTypes.STRING,
-            unique: true,
-        },
-        password: { type: DataTypes.STRING },
-        createdAt: { type: DataTypes.DATE },
-        updatedAt: { type: DataTypes.DATE },
-    });
-};
+const routes = new Router();
 
 const socketIoEventHandlers = {};
 const socketIoHandler = socket => {
@@ -168,10 +170,7 @@ const startSession = (request, response) => {
     }));
 };
 
-const isAuthenticated = (request) => {
-    return !!request.session.user;
-};
-
+const isAuthenticated = request => !!request.session.user; // return boolean
 const requestHandler = async (request, response) => {
     const start = Date.now();
     response.on('close', () => logRequest(request, response, Date.now() - start));
@@ -229,8 +228,8 @@ socketIo(httpsServer).on('connection', socketIoHandler);
 
 const serve = async () => {
     try {
-        await sequelize.authenticate();
-        createTables();
+        await sequelize.authenticate(); // test database connection
+        await createTables();
 
         httpServer.listen(httpPort, hostname, () => {
             console.info(`Resource Directory: ${resourceBaseDir}`);
@@ -428,9 +427,8 @@ routes.add('GET', '/date_time_qr_code_gif', async (request, response) => {
         for (let x = 0; x < width; ++x) {
             for (let y = 0; y < width; ++y) {
                 const pixelIndex = (x + y * width) * 4;
-                let i = Math.trunc(y / scale), j = Math.trunc(x / scale);
-                if (i && j && i <= size && j <= size) {
-                    --i; --j; // offset
+                let i = Math.trunc(y / scale) - 1, j = Math.trunc(x / scale) - 1;
+                if (0 <= i && 0 <= j && i < size && j < size) {
                     if (data[i * size + j]) {
                         for (let k = 0; k < 4; ++k) {
                             pixels[pixelIndex + k] = 0; // set black
